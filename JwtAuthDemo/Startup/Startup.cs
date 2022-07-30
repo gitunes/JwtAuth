@@ -27,41 +27,7 @@ namespace JwtAuthDemo.Startup
         {
             services.AddControllers();
             JwtConfiguration(services);
-            services.AddSwaggerGen(opt =>
-            {
-                opt.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Version = "v1",
-                    Title = "Jwt Auth",
-                    Description = "Jwt Auth Api Swagger Documentation",
-                    TermsOfService = new Uri("http://swagger.io/terms/"),
-                });
-
-                opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = "JWT Authorization header using the Bearer scheme.",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Scheme = "bearer",
-                    Type = SecuritySchemeType.Http,
-                    BearerFormat = "JWT"
-                });
-
-                opt.AddSecurityRequirement(new OpenApiSecurityRequirement()
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        new List<string>()
-                    }
-                });
-            });
+            SwaggerIntegration(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -120,6 +86,45 @@ namespace JwtAuthDemo.Startup
                 var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(jwtSettings.DefaultAuthenticateScheme);
                 defaultAuthorizationPolicyBuilder = defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
                 options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+            });
+        }
+
+        private void SwaggerIntegration(IServiceCollection services)
+        {
+            services.AddSwaggerGen(opt =>
+            {
+                opt.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "Jwt Auth",
+                    Description = "Jwt Auth Api Swagger Documentation",
+                    TermsOfService = new Uri("http://swagger.io/terms/"),
+                });
+
+                opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme.",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Scheme = "bearer",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT"
+                });
+
+                opt.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new List<string>()
+                    }
+                });
             });
         }
     }
